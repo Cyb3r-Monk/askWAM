@@ -1,0 +1,41 @@
+# Build output
+bin/
+obj/
+src/native/bin/
+src/bof/bin/
+artifacts/
+*.exe
+*.dll
+*.pdb
+*.obj
+*.o
+
+# Local IDE state
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Authentication material and local configuration
+.env
+.env.*
+*.token
+*.tokens
+*.jwt
+*.jwe
+secrets.json
+appsettings.local.json
+
+# Diagnostics that may contain tenant or token data
+*.log
+*.etl
+*.dmp
+*.dump
+traces/
+
+# Package/cache output
+packages/
+*.nupkg
+
+# Internal state / analysis files
+analysis/

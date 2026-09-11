@@ -1,0 +1,101 @@
+{
+  "name": "askwam",
+  "version": "1.0.0",
+  "command_name": "askwam",
+  "extension_author": "Dirk-jan Mollema",
+  "original_author": "Dirk-jan Mollema",
+  "repo_url": "",
+  "help": "Silently request a token from Windows WAM",
+  "long_help": "Runs the x64 askWAM BOF in the current process and user context. All arguments are optional. Boolean switches are int32 values: 0 disables and 1 enables. Scope and resource are mutually exclusive, as are CAE and custom claims.",
+  "depends_on": "coff-loader",
+  "entrypoint": "go",
+  "files": [
+    {
+      "os": "windows",
+      "arch": "amd64",
+      "path": "bin/Release/askwam_bof.x64.o"
+    }
+  ],
+  "arguments": [
+    {
+      "name": "client-id",
+      "desc": "Public client ID; empty uses Teams desktop/mobile",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "scope",
+      "desc": "v2 scope; empty uses Graph .default unless resource is set",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "resource",
+      "desc": "WAM v1-compatible resource; mutually exclusive with scope",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "authority",
+      "desc": "Provider authority; empty uses organizations",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "claims-json",
+      "desc": "Raw OAuth claims object; mutually exclusive with CAE",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "account-id",
+      "desc": "Exact opaque WAM account ID; mutually exclusive with username",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "username",
+      "desc": "Exact unique username; mutually exclusive with account ID",
+      "type": "string",
+      "optional": true,
+      "default": ""
+    },
+    {
+      "name": "timeout-seconds",
+      "desc": "Silent-operation timeout from 1 to 300",
+      "type": "int",
+      "optional": true,
+      "default": 30
+    },
+    {
+      "name": "hide",
+      "desc": "Set to 1 to omit the access token",
+      "type": "int",
+      "optional": true,
+      "default": 0,
+      "choices": ["0", "1"]
+    },
+    {
+      "name": "cae",
+      "desc": "Set to 1 to send predefined cp1 claims",
+      "type": "int",
+      "optional": true,
+      "default": 0,
+      "choices": ["0", "1"]
+    },
+    {
+      "name": "enum",
+      "desc": "Set to 1 to enumerate accounts without requesting a token",
+      "type": "int",
+      "optional": true,
+      "default": 0,
+      "choices": ["0", "1"]
+    }
+  ]
+}
