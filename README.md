@@ -12,7 +12,8 @@ Tokens requested via this flow will inherit the following details:
 - User auth methods
 - Device state like compliant/hybrid joined or managed
 
-This way of requesting tokens also works when Token Protection is enforced.
+This way of requesting tokens also works when Token Protection is enforced. 
+CAE tokens can be requested with the `--cae` flag.
 
 ## Defaults
 
@@ -116,3 +117,16 @@ The project also ships `src\bof\extension.json` for loading the Release BOF as a
 Sliver extension. Mythic Apollo needs no equivalent sidecar file; its
 `execute_coff` command accepts the object and the same typed argument sequence.
 See `src\bof\README.md` for both integrations and the packed argument contract.
+
+## References
+Official documentation:
+- [Web Account Manager desktop guide](https://learn.microsoft.com/en-us/windows/apps/develop/security/web-account-manager) — direct Windows WAM APIs and desktop integration.
+- [Microsoft Entra WAM API reference](https://learn.microsoft.com/en-us/entra/identity-platform/reference-entra-id-wam-api) — provider-specific request parameters.
+- [Using MSAL.NET with WAM](https://learn.microsoft.com/en-us/entra/msal/dotnet/acquiring-tokens/desktop-mobile/wam) — broker integration and the managed reference approach.
+- [Claims challenges and client capabilities](https://learn.microsoft.com/en-us/entra/identity-platform/claims-challenge) — claims requests and CAE client capabilities.
+
+Similar projects:
+- [list-wam-accounts by Tw1sm](https://github.com/Tw1sm/list-wam-accounts)
+- [go-wam by Allow-Solutions](https://github.com/allod-solutions/go-wam)
+
+This project was created by Codex using GPT 5.6 Sol.
